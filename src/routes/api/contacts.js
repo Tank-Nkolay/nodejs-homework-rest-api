@@ -5,7 +5,13 @@ const router = express.Router();
 const {
   addPostValidation,
   addPutValidation,
+
+  updateFavoriteStatusValidation,
 } = require("../../middlewares/valadationMiddleware");
+
+// wrapper for controllers
+const { asyncWrapper } = require("../../helpers/apiHelpers");
+
 
 // controllers
 const {
@@ -14,13 +20,22 @@ const {
   controllerPost,
   controllerPut,
   controllerDelete,
+
+  controllerUpdateStatusContact,
 } = require("../../controllers/controller");
 
 // router
-router.get("/", controllerGetAll);
-router.get("/:id", controllerGetById);
-router.post("/", addPostValidation, controllerPost);
-router.put("/:id", addPutValidation, controllerPut);
-router.delete("/:id", controllerDelete);
+router.get("/", asyncWrapper(controllerGetAll));
+router.get("/:id", asyncWrapper(controllerGetById));
+router.post("/", addPostValidation, asyncWrapper(controllerPost));
+router.put("/:id", addPutValidation, asyncWrapper(controllerPut));
+router.delete("/:id", asyncWrapper(controllerDelete));
+router.patch(
+  "/:id/favorite",
+  updateFavoriteStatusValidation,
+  asyncWrapper(controllerUpdateStatusContact)
+);
 
 module.exports = router;
+// =============================
+
