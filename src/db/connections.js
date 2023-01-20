@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
-const connectMongo = async () => {
-  return mongoose.connect(process.env.DB_HOST);
-};
+// const connectMongo = async () => {
+//   return mongoose.connect(process.env.DB_HOST);
+// };
 
-module.exports = { connectMongo };
+// module.exports = { connectMongo };
