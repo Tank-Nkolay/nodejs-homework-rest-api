@@ -15,7 +15,6 @@ const addPostValidation = (req, res, next) => {
       )
       .required(),
     favorite: Joi.boolean(),
-
   });
   const validationSchema = schema.validate(req.body);
   if (validationSchema.error) {
@@ -41,7 +40,6 @@ const addPutValidation = (req, res, next) => {
       )
       .required(),
     favorite: Joi.boolean(),
-
   });
   const validationSchema = schema.validate(req.body);
   if (validationSchema.error) {
@@ -61,7 +59,50 @@ const updateFavoriteStatusValidation = (req, res, next) => {
   if (validationSchema.error) {
     return res.status(400).json({
       status: validationSchema.error.details,
+    });
+  }
+  next();
+};
 
+// ===================
+
+const patchUpdateSubscValidation = (req, res, next) => {
+  const schema = Joi.object({
+    subscription: Joi.string().valid("starter", "pro", "business").required(),
+  });
+  const validationSchema = schema.validate(req.body);
+  if (validationSchema.error) {
+    return res.status(400).json({
+      status: validationSchema.error.details,
+    });
+  }
+  next();
+};
+
+const userRegisterValidation = (req, res, next) => {
+  const schema = Joi.object({
+    password: Joi.string().required(),
+    email: Joi.string().required(),
+    subscription: Joi.string().valid("starter", "pro", "business"),
+  });
+  const validationSchema = schema.validate(req.body);
+  if (validationSchema.error) {
+    return res.status(400).json({
+      status: validationSchema.error.details,
+    });
+  }
+  next();
+};
+
+const userLoginValidation = (req, res, next) => {
+  const schema = Joi.object({
+    password: Joi.string().required(),
+    email: Joi.string().required(),
+  });
+  const validationSchema = schema.validate(req.body);
+  if (validationSchema.error) {
+    return res.status(400).json({
+      status: validationSchema.error.details,
     });
   }
   next();
@@ -70,7 +111,8 @@ const updateFavoriteStatusValidation = (req, res, next) => {
 module.exports = {
   addPostValidation,
   addPutValidation,
-
   updateFavoriteStatusValidation,
-
+  patchUpdateSubscValidation,
+  userRegisterValidation,
+  userLoginValidation,
 };

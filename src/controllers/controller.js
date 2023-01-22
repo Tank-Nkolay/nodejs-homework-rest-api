@@ -1,9 +1,19 @@
-
-const { Contact } = require("../db/postModel");
+const { Contact } = require("../models/postModel");
 
 // GET ALL ============================================
 const controllerGetAll = async (req, res) => {
-  const contacts = await Contact.find({});
+  // const contacts = await Contact.find({});
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 5 } = req.query;
+  const skip = (page - 1) * limit;
+  const contacts = await Contact.find(
+    { owner },
+    {},
+    {
+      skip,
+      limit,
+    }
+  ).populate("owner", "_id email");
   res.status(200).json({ contacts, status: "succsess" });
 };
 
@@ -19,8 +29,8 @@ const controllerGetById = async (req, res) => {
 
 // POST ============================================
 const controllerPost = async (req, res) => {
-  const body = req.body;
-  const newContact = await Contact.create(body);
+  const { _id } = req.user;
+  const newContact = await Contact.create({ ...req.body, owner: _id });
   res.status(201).json({ newContact, status: "succsess" });
 };
 
@@ -60,85 +70,6 @@ const controllerUpdateStatusContact = async (req, res) => {
     });
   }
   res.json({ message: "Contact was update", status: "succsess" });
-=======
-const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require("../models/contacts");
-
-// GET ============================================
-const controllerGetAll = async (req, res, next) => {
-  try {
-    const contacts = await listContacts();
-    res.status(200).json(contacts);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-// GET by ID =======================================
-const controllerGetById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const contact = await getContactById(id);
-    if (!contact) {
-      return res.status(404).json({ message: "User wasn`t found" });
-    }
-    res.status(200).json(contact);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-// POST ============================================
-const controllerPost = async (req, res, next) => {
-  try {
-    const { name, email, phone } = req.body;
-
-    const body = {
-      name,
-      email,
-      phone,
-    };
-
-    const newContact = await addContact(body);
-    res.status(201).json(newContact);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// PUT ============================================
-const controllerPut = async (req, res, next) => {
-  const { id } = req.params;
-  const { name, email, phone } = req.body;
-
-  const body = {
-    name,
-    email,
-    phone,
-  };
-
-  const updatedContact = await updateContact(id, body);
-  if (!updatedContact) {
-    return res.status(404).json({ message: "Contact wasn`t found" });
-  }
-  res.status(200).json(updatedContact);
-};
-
-// DELETE ========================================
-const controllerDelete = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    await removeContact(id);
-    res.status(200).json({ message: "Contact deleted" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-
 };
 
 module.exports = {
@@ -147,5 +78,5 @@ module.exports = {
   controllerPost,
   controllerPut,
   controllerDelete,
-
+  controllerUpdateStatusContact,
 };
