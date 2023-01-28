@@ -18,10 +18,14 @@ const { logout } = require("../../controllers/logout");
 const { updateSubsc } = require("../../controllers/updateSubsc");
 const { getCurrent } = require("../../controllers/currentUserController");
 const { updateAvatar } = require("../../controllers/updateAvatar");
+const { verifyEmail } = require("../../controllers/verifyEmail");
+const { verifyEmailResend } = require("../../controllers/verifyEmailResend");
 
 router.post("/signup", userRegisterValidation, asyncWrapper(signup));
 router.post("/login", userLoginValidation, asyncWrapper(login));
 router.get("/logout", auth, asyncWrapper(logout));
+router.get("/verify/:verificationToken", asyncWrapper(verifyEmail));
+router.post("/verify", asyncWrapper(verifyEmailResend));
 router.patch("/", auth, patchUpdateSubscValidation, asyncWrapper(updateSubsc));
 router.get("/current", auth, asyncWrapper(getCurrent));
 router.patch(
